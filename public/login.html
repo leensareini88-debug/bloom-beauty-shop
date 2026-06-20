@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bloom Beauty - Sign In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <!-- Navbar (rendered by components.js) -->
+  <div id="navbar-placeholder"></div>
+
+  <!-- Auth layout -->
+  <div class="auth-page-layout">
+    <div class="auth-image-panel" style="background-image: url('https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800');">
+      <div class="auth-image-content">
+        <h2>Welcome Back</h2>
+        <p>Your beauty journey continues here</p>
+      </div>
+    </div>
+
+    <div class="auth-form-panel">
+      <div class="auth-form-container">
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="login-tab">Sign In</button>
+          <button class="auth-tab" id="register-tab">Create Account</button>
+        </div>
+
+        <!-- Login Form -->
+        <form class="auth-form active" id="login-form" novalidate>
+          <h2 class="auth-form-title">Welcome Back</h2>
+          <p class="auth-form-subtitle">Sign in to continue your beauty journey</p>
+
+          <div class="form-field">
+            <label for="login-email">Email</label>
+            <input type="email" id="login-email" />
+            <p class="field-error" id="login-email-error"></p>
+          </div>
+
+          <div class="form-field">
+            <label for="login-password">Password</label>
+            <div class="password-field">
+              <input type="password" id="login-password" />
+              <button type="button" class="toggle-password" data-target="login-password">
+                <i class="ti ti-eye"></i>
+              </button>
+            </div>
+            <p class="field-error" id="login-password-error"></p>
+          </div>
+
+          <a href="#" class="forgot-link">Forgot password?</a>
+
+          <button type="submit" class="btn-primary" style="width: 100%;" id="login-submit">Sign In</button>
+          <p class="api-error" id="login-api-error"></p>
+
+          <div class="auth-divider">Or continue with</div>
+
+          <p class="auth-switch">
+            Don't have an account? <button type="button" id="switch-to-register">Create one</button>
+          </p>
+        </form>
+
+        <!-- Register Form -->
+        <form class="auth-form" id="register-form" novalidate>
+          <h2 class="auth-form-title">Join Bloom Beauty</h2>
+          <p class="auth-form-subtitle">Create an account to start your beauty journey</p>
+
+          <div class="form-field">
+            <label for="register-name">Full Name</label>
+            <input type="text" id="register-name" />
+            <p class="field-error" id="register-name-error"></p>
+          </div>
+
+          <div class="form-field">
+            <label for="register-email">Email</label>
+            <input type="email" id="register-email" />
+            <p class="field-error" id="register-email-error"></p>
+          </div>
+
+          <div class="form-field">
+            <label for="register-password">Password</label>
+            <div class="password-field">
+              <input type="password" id="register-password" />
+              <button type="button" class="toggle-password" data-target="register-password">
+                <i class="ti ti-eye"></i>
+              </button>
+            </div>
+            <div class="password-strength">
+              <div class="password-strength-bar">
+                <div class="password-strength-fill" id="password-strength-fill"></div>
+              </div>
+              <span class="password-strength-label" id="password-strength-label"></span>
+            </div>
+            <p class="field-error" id="register-password-error"></p>
+          </div>
+
+          <div class="form-field">
+            <label for="register-confirm-password">Confirm Password</label>
+            <div class="password-field">
+              <input type="password" id="register-confirm-password" />
+              <button type="button" class="toggle-password" data-target="register-confirm-password">
+                <i class="ti ti-eye"></i>
+              </button>
+            </div>
+            <p class="field-error" id="register-confirm-password-error"></p>
+          </div>
+
+          <div class="form-checkbox">
+            <input type="checkbox" id="register-terms" />
+            <label for="register-terms">I agree to the <a href="#">Terms &amp; Conditions</a> and <a href="#">Privacy Policy</a></label>
+          </div>
+          <p class="field-error" id="register-terms-error"></p>
+
+          <button type="submit" class="btn-primary" style="width: 100%;" id="register-submit">Create Account</button>
+          <p class="api-error" id="register-api-error"></p>
+
+          <p class="auth-switch">
+            Already have an account? <button type="button" id="switch-to-login">Sign in</button>
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer (rendered by components.js) -->
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/cart.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+    /* ============================================================
+       Redirect if already logged in
+       ============================================================ */
+    if (localStorage.getItem('token')) {
+      window.location.href = 'index.html';
+    }
+
+    /* ============================================================
+       Tab switching
+       ============================================================ */
+    const loginTab = document.getElementById('login-tab');
+    const registerTab = document.getElementById('register-tab');
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+
+    function showLogin() {
+      loginTab.classList.add('active');
+      registerTab.classList.remove('active');
+      loginForm.classList.add('active');
+      registerForm.classList.remove('active');
+    }
+
+    function showRegister() {
+      registerTab.classList.add('active');
+      loginTab.classList.remove('active');
+      registerForm.classList.add('active');
+      loginForm.classList.remove('active');
+    }
+
+    function switchToLogin() {
+      showLogin();
+    }
+
+    function switchToRegister() {
+      showRegister();
+    }
+
+    loginTab.addEventListener('click', switchToLogin);
+    registerTab.addEventListener('click', switchToRegister);
+    document.getElementById('switch-to-register').addEventListener('click', switchToRegister);
+    document.getElementById('switch-to-login').addEventListener('click', switchToLogin);
+
+    /* ============================================================
+       Show register tab if requested via ?tab=register
+       ============================================================ */
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('tab') === 'register') switchToRegister();
+
+    /* ============================================================
+       Password show/hide toggle
+       ============================================================ */
+    document.querySelectorAll('.toggle-password').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target = document.getElementById(btn.dataset.target);
+        const icon = btn.querySelector('i');
+
+        if (target.type === 'password') {
+          target.type = 'text';
+          icon.classList.remove('ti-eye');
+          icon.classList.add('ti-eye-off');
+        } else {
+          target.type = 'password';
+          icon.classList.remove('ti-eye-off');
+          icon.classList.add('ti-eye');
+        }
+      });
+    });
+
+    /* ============================================================
+       Password strength
+       ============================================================ */
+    const passwordInput = document.getElementById('register-password');
+    const strengthFill = document.getElementById('password-strength-fill');
+    const strengthLabel = document.getElementById('password-strength-label');
+
+    function getPasswordStrength(password) {
+      if (!password) return null;
+
+      let score = 0;
+      if (password.length >= 8) score++;
+      if (/\d/.test(password)) score++;
+      if (/[^A-Za-z0-9]/.test(password)) score++;
+      if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
+
+      if (score <= 1) return 'weak';
+      if (score <= 2) return 'medium';
+      return 'strong';
+    }
+
+    passwordInput.addEventListener('input', () => {
+      const strength = getPasswordStrength(passwordInput.value);
+
+      strengthFill.className = 'password-strength-fill';
+
+      if (!strength) {
+        strengthLabel.textContent = '';
+        return;
+      }
+
+      strengthFill.classList.add(strength);
+      strengthLabel.textContent = `Password strength: ${strength.charAt(0).toUpperCase() + strength.slice(1)}`;
+    });
+
+    /* ============================================================
+       Validation helpers
+       ============================================================ */
+    function setError(inputId, errorId, message) {
+      const input = document.getElementById(inputId);
+      const error = document.getElementById(errorId);
+      error.textContent = message;
+      input.classList.toggle('input-error', !!message);
+    }
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    /* ============================================================
+       Login
+       ============================================================ */
+    async function login(email, password) {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+
+      localStorage.setItem('token', data.token);
+      localStorage.setItem(
+        'user',
+        JSON.stringify({ id: data.id, name: data.name, email: data.email, role: data.role })
+      );
+    }
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      const apiError = document.getElementById('login-api-error');
+      apiError.textContent = '';
+
+      setError('login-email', 'login-email-error', '');
+      setError('login-password', 'login-password-error', '');
+
+      let isValid = true;
+
+      if (!email) {
+        setError('login-email', 'login-email-error', 'Email is required');
+        isValid = false;
+      } else if (!isValidEmail(email)) {
+        setError('login-email', 'login-email-error', 'Enter a valid email');
+        isValid = false;
+      }
+
+      if (!password) {
+        setError('login-password', 'login-password-error', 'Password is required');
+        isValid = false;
+      }
+
+      if (!isValid) return;
+
+      const submitBtn = document.getElementById('login-submit');
+      submitBtn.disabled = true;
+
+      try {
+        await login(email, password);
+        updateCartCountUI();
+        const redirect = params.get('redirect');
+        window.location.href = redirect || 'index.html';
+      } catch (err) {
+        apiError.textContent = err.message;
+        submitBtn.disabled = false;
+      }
+    });
+
+    /* ============================================================
+       Register
+       ============================================================ */
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('register-name').value.trim();
+      const email = document.getElementById('register-email').value.trim();
+      const password = document.getElementById('register-password').value;
+      const confirmPassword = document.getElementById('register-confirm-password').value;
+      const termsChecked = document.getElementById('register-terms').checked;
+      const apiError = document.getElementById('register-api-error');
+      apiError.textContent = '';
+
+      ['register-name', 'register-email', 'register-password', 'register-confirm-password'].forEach((id) => {
+        setError(id, `${id}-error`, '');
+      });
+      document.getElementById('register-terms-error').textContent = '';
+
+      let isValid = true;
+
+      if (!name) {
+        setError('register-name', 'register-name-error', 'Full name is required');
+        isValid = false;
+      }
+
+      if (!email) {
+        setError('register-email', 'register-email-error', 'Email is required');
+        isValid = false;
+      } else if (!isValidEmail(email)) {
+        setError('register-email', 'register-email-error', 'Enter a valid email');
+        isValid = false;
+      }
+
+      if (!password) {
+        setError('register-password', 'register-password-error', 'Password is required');
+        isValid = false;
+      } else if (password.length < 6) {
+        setError('register-password', 'register-password-error', 'Password must be at least 6 characters');
+        isValid = false;
+      }
+
+      if (!confirmPassword) {
+        setError('register-confirm-password', 'register-confirm-password-error', 'Please confirm your password');
+        isValid = false;
+      } else if (password !== confirmPassword) {
+        setError('register-confirm-password', 'register-confirm-password-error', 'Passwords do not match');
+        isValid = false;
+      }
+
+      if (!termsChecked) {
+        document.getElementById('register-terms-error').textContent = 'You must agree to the terms';
+        isValid = false;
+      }
+
+      if (!isValid) return;
+
+      const submitBtn = document.getElementById('register-submit');
+      submitBtn.disabled = true;
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || 'Registration failed');
+        }
+
+        await login(email, password);
+        updateCartCountUI();
+        const redirect = params.get('redirect');
+        window.location.href = redirect || 'index.html';
+      } catch (err) {
+        apiError.textContent = err.message;
+        submitBtn.disabled = false;
+      }
+    });
+
+    /* ============================================================
+       Init
+       ============================================================ */
+    initNavbar();
+    initFooter();
+    updateCartCountUI();
+  </script>
+</body>
+</html>

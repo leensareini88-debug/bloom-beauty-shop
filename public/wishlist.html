@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bloom Beauty - Your Wishlist</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <!-- Navbar (rendered by components.js) -->
+  <div id="navbar-placeholder"></div>
+
+  <h1 class="page-title">Your Wishlist</h1>
+
+  <section style="padding: 24px 5% 80px;">
+    <div id="wishlist-empty" style="display:none; text-align:center; grid-column:1/-1; padding:80px 20px;">
+      <div class="cart-empty">
+        <i class="ti ti-heart"></i>
+        <p>Your wishlist is empty</p>
+        <a href="/index.html#products" class="btn-primary">Continue Shopping</a>
+      </div>
+    </div>
+    <div class="products-grid" id="wishlist-grid"></div>
+  </section>
+
+  <!-- Footer (rendered by components.js) -->
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/cart.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+    /* ============================================================
+       Render wishlist
+       ============================================================ */
+    function renderWishlist() {
+      const wishlist = getWishlist();
+      const grid = document.getElementById('wishlist-grid');
+      const emptyState = document.getElementById('wishlist-empty');
+
+      if (!wishlist || wishlist.length === 0) {
+        if (grid) grid.innerHTML = '';
+        if (emptyState) emptyState.style.display = 'block';
+        updateWishlistCountUI();
+        return;
+      }
+
+      if (emptyState) emptyState.style.display = 'none';
+
+      if (grid) {
+        grid.innerHTML = wishlist.map((item, index) => {
+          const name = item.name || item.title || 'Product';
+          const price = parseFloat(item.price) || 0;
+          const image = item.image || item.img ||
+            'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400';
+          const id = item._id || item.id || index;
+          const category = item.category || '';
+
+          return `
+            <div style="
+              background: white;
+              border-radius: 16px;
+              overflow: hidden;
+              border: 1px solid rgba(196,145,127,0.15);
+              box-shadow: 0 2px 12px rgba(122,79,58,0.06);
+              position: relative;
+            ">
+              <button onclick="removeFromWishlistPage('${id}')" style="
+                position: absolute; top: 12px; right: 12px;
+                background: white; border: none;
+                width: 30px; height: 30px;
+                border-radius: 50%; cursor: pointer;
+                font-size: 16px; color: #8a7060;
+                display: flex; align-items: center;
+                justify-content: center;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                z-index: 2;
+              ">×</button>
+
+              <div style="height: 240px; overflow: hidden;">
+                <img src="${image}" alt="${name}" style="
+                  width: 100%; height: 100%; object-fit: cover;
+                " onerror="this.src='https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400'">
+              </div>
+
+              <div style="padding: 14px 16px 16px;">
+                ${category ? `<div style="font-size:10px; letter-spacing:1.5px;
+                  text-transform:uppercase; color:#c4917f; margin-bottom:4px;">
+                  ${category}</div>` : ''}
+                <div style="font-size:15px; font-family:'Playfair Display',serif;
+                  color:#3d2014; margin-bottom:8px; font-weight:600;">
+                  ${name}
+                </div>
+                <div style="font-size:16px; color:#7a4f3a;
+                  font-weight:500; margin-bottom:12px;">
+                  $${price.toFixed(2)}
+                </div>
+                <button onclick="moveToCart('${id}')" style="
+                  width: 100%; background: #c4917f; color: white;
+                  border: none; padding: 10px; border-radius: 4px;
+                  font-size: 11px; letter-spacing: 1.5px;
+                  text-transform: uppercase; cursor: pointer;
+                  transition: background 0.3s;
+                " onmouseover="this.style.background='#3d2014'"
+                  onmouseout="this.style.background='#c4917f'">
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      updateWishlistCountUI();
+    }
+
+    function removeFromWishlistPage(id) {
+      let wishlist = getWishlist();
+      wishlist = wishlist.filter(item =>
+        (item._id || item.id) !== id
+      );
+      localStorage.setItem('wishlist', JSON.stringify(wishlist));
+      showToast('Removed from wishlist', 'error');
+      renderWishlist();
+    }
+
+    function moveToCart(id) {
+      const wishlist = getWishlist();
+      const item = wishlist.find(i => (i._id || i.id) === id);
+      if (item) {
+        addToCart(item, 1);
+      }
+    }
+
+    /* ============================================================
+       Init
+       ============================================================ */
+    initNavbar();
+    initFooter();
+    updateCartCountUI();
+    renderWishlist();
+  </script>
+</body>
+</html>

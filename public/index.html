@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bloom Beauty</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    @keyframes shimmer {
+      0% { background-position: -800px 0; }
+      100% { background-position: 800px 0; }
+    }
+    .skeleton-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(196,145,127,0.1);
+    }
+    .skeleton-pulse {
+      background: linear-gradient(
+        90deg,
+        #f5ede8 0%,
+        #fdf8f5 40%,
+        #f5ede8 80%
+      );
+      background-size: 800px 100%;
+      animation: shimmer 1.6s ease-in-out infinite;
+    }
+    .skeleton-img {
+      width: 100%;
+      height: 240px;
+    }
+    .skeleton-line {
+      height: 10px;
+      border-radius: 20px;
+      margin: 10px 16px 0;
+    }
+    .skeleton-line.short { width: 35%; }
+    .skeleton-line.medium { width: 65%; }
+    .skeleton-line.full {
+      width: calc(100% - 32px);
+      height: 36px;
+      border-radius: 8px;
+      margin-top: 12px;
+      margin-bottom: 16px;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    .flip-card {
+      height: 300px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+    .flip-card:hover .flip-inner {
+      box-shadow: 0 12px 32px rgba(122,79,58,0.12);
+    }
+    .flip-card:hover .flip-front {
+      filter: brightness(0.97);
+    }
+    .flip-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1), box-shadow 0.3s ease;
+      transform-style: preserve-3d;
+      border-radius: 16px;
+    }
+    .flip-card.flipped .flip-inner {
+      transform: rotateY(180deg);
+    }
+    .flip-front, .flip-back {
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 20px;
+      border: 1px solid rgba(196,145,127,0.2);
+    }
+    .flip-back {
+      transform: rotateY(180deg);
+      background: #3d2014 !important;
+    }
+    .flip-icon-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 12px rgba(122,79,58,0.1);
+    }
+    .flip-icon-circle i {
+      font-size: 28px;
+      color: #c4917f;
+    }
+    .flip-card:hover .flip-icon-circle {
+      box-shadow: 0 4px 16px rgba(196,145,127,0.25);
+      transform: scale(1.05);
+      transition: all 0.3s ease;
+    }
+    .product-img-wrap:hover .quick-view-btn,
+    div:hover > .quick-view-btn {
+      opacity: 1 !important;
+      transform: translateX(-50%) translateY(0) !important;
+    }
+
+    @media (max-width: 768px) {
+      #tips-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+      }
+      .flip-card {
+        height: 260px !important;
+      }
+      #new-carousel > div,
+      #sale-carousel > div,
+      #rec-carousel > div {
+        min-width: calc(100% - 0px) !important;
+        max-width: calc(100% - 0px) !important;
+      }
+      #ba-gallery-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .hero-title {
+        font-size: 36px !important;
+      }
+      .categories-grid {
+        gap: 16px !important;
+      }
+      .category-circle {
+        width: 80px !important;
+        height: 80px !important;
+      }
+      .nav-links {
+        display: none !important;
+      }
+      .footer {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+      .product-detail-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .perks-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .quiz-options-grid {
+        grid-template-columns: 1fr !important;
+      }
+      section {
+        padding: 48px 4% !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      #tips-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .flip-card {
+        height: 240px !important;
+      }
+      .footer {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar (rendered by components.js) -->
+  <div id="navbar-placeholder"></div>
+
+  <!-- Hero Carousel -->
+  <section class="hero-carousel" id="hero-carousel">
+    <div class="hero-slide active" style="background-image: url('https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=1400');">
+      <div class="hero-slide-overlay"></div>
+      <div class="hero-content">
+        <span class="hero-tag">New Collection</span>
+        <h1 class="hero-title">Where Beauty Finds You</h1>
+        <p class="hero-subtitle">Your destination for skincare, makeup &amp; authentic beauty essentials</p>
+        <div class="hero-cta">
+          <a href="#new-arrivals" class="btn-primary">Shop Now</a>
+          <a href="/quiz.html" style="
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            border: 1.5px solid rgba(255,255,255,0.7);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 4px;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: all 0.3s;
+          ">✨ Find My Routine</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=1400');">
+      <div class="hero-slide-overlay"></div>
+      <div class="hero-content">
+        <span class="hero-tag">Skincare Essentials</span>
+        <h1 class="hero-title">Glow Like Never Before</h1>
+        <p class="hero-subtitle">Discover serums, moisturizers &amp; treatments for every skin type</p>
+        <div class="hero-cta">
+          <a href="/skincare.html" class="btn-primary">Shop Skincare</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1596704017254-9b121068fb31?w=1400');">
+      <div class="hero-slide-overlay"></div>
+      <div class="hero-content">
+        <span class="hero-tag">Makeup Collection</span>
+        <h1 class="hero-title">Unleash Your Artistry</h1>
+        <p class="hero-subtitle">From natural looks to bold statements — find your perfect shade</p>
+        <div class="hero-cta">
+          <a href="/makeup.html" class="btn-primary">Shop Makeup</a>
+        </div>
+      </div>
+    </div>
+
+    <button class="hero-arrow hero-arrow-prev" id="hero-prev" aria-label="Previous slide">
+      <i class="ti ti-chevron-left"></i>
+    </button>
+    <button class="hero-arrow hero-arrow-next" id="hero-next" aria-label="Next slide">
+      <i class="ti ti-chevron-right"></i>
+    </button>
+
+    <div class="hero-dots" id="hero-dots">
+      <span class="hero-dot active" data-index="0"></span>
+      <span class="hero-dot" data-index="1"></span>
+      <span class="hero-dot" data-index="2"></span>
+    </div>
+  </section>
+
+  <!-- Announcement Strip -->
+  <div class="announcement-strip">
+    <span>🚚 Free Shipping Over $75</span>
+    <span>✨ Authentic Brands</span>
+    <span>↩ 30-Day Returns</span>
+    <span>💳 Secure Payment</span>
+  </div>
+
+  <!-- Categories -->
+  <section class="categories-section">
+    <div class="section-header">
+      <span class="section-tag">Shop by Category</span>
+      <h2 class="section-title">Find Your Ritual</h2>
+    </div>
+    <div class="categories-grid">
+      <a class="category-card" href="/skincare.html">
+        <div class="category-circle" style="width: 130px; height: 130px;">
+          <img src="https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=300" alt="Skincare" />
+        </div>
+        <span class="category-name">Skincare</span>
+      </a>
+      <a class="category-card" href="/makeup.html">
+        <div class="category-circle" style="width: 130px; height: 130px;">
+          <img src="https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=300" alt="Makeup" />
+        </div>
+        <span class="category-name">Makeup</span>
+      </a>
+      <a class="category-card" href="/haircare.html">
+        <div class="category-circle" style="width: 130px; height: 130px;">
+          <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=300" alt="Haircare" />
+        </div>
+        <span class="category-name">Haircare</span>
+      </a>
+      <a class="category-card" href="/bodycare.html">
+        <div class="category-circle" style="width: 130px; height: 130px;">
+          <img src="https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=300" alt="Body Care" />
+        </div>
+        <span class="category-name">Body Care</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Quiz Banner -->
+  <section style="
+    background: linear-gradient(135deg, #3d2014 0%, #7a4f3a 100%);
+    padding: 60px 5%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+  ">
+    <div>
+      <span style="font-size:11px; letter-spacing:2px;
+        text-transform:uppercase; color:#c4917f;">
+        PERSONALIZED FOR YOU
+      </span>
+      <h2 style="font-family:'Playfair Display',serif;
+        font-size:32px; color:white; margin:8px 0 12px;
+        line-height:1.2;">
+        Not Sure Where to Start?
+      </h2>
+      <p style="color:rgba(255,255,255,0.75);
+        font-size:14px; max-width:480px; line-height:1.7;">
+        Take our 5-question skin quiz and get a personalized
+        routine recommended just for you. Free, instant results.
+      </p>
+    </div>
+    <a href="/quiz.html" style="
+      background: white;
+      color: #3d2014;
+      padding: 16px 40px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: all 0.3s;
+      flex-shrink: 0;
+    ">✨ Take the Quiz</a>
+  </section>
+
+  <!-- Anchor for "View All / Shop All" links -->
+  <div id="products"></div>
+
+  <!-- New Arrivals -->
+  <section id="new-arrivals" style="background: var(--white); padding: 80px 5%;">
+    <div class="section-header">
+      <span class="section-tag">Just Landed</span>
+      <h2 class="section-title">New Arrivals</h2>
+      <p style="color: var(--gray-text); font-size: 14px; margin-top: 8px;">Fresh picks added to our collection</p>
+    </div>
+
+    <div class="carousel-wrapper">
+      <button class="carousel-arrow carousel-arrow-prev" id="new-prev" aria-label="Previous">
+        <i class="ti ti-chevron-left"></i>
+      </button>
+      <div class="carousel-track-container">
+        <div class="carousel-track" id="new-carousel" style="display:flex; gap:24px; transition:transform 0.5s ease;">
+          <p>Loading new arrivals...</p>
+        </div>
+      </div>
+      <button class="carousel-arrow carousel-arrow-next" id="new-next" aria-label="Next">
+        <i class="ti ti-chevron-right"></i>
+      </button>
+    </div>
+
+    <div style="text-align:center; margin-top:32px;">
+      <a href="/index.html#products" style="
+        display: inline-block;
+        background: transparent;
+        color: #3d2014;
+        border: 1.5px solid #3d2014;
+        padding: 12px 36px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        transition: all 0.3s;
+      " onmouseover="this.style.background='#3d2014';this.style.color='white'"
+        onmouseout="this.style.background='transparent';this.style.color='#3d2014'">
+        View All New Arrivals
+      </a>
+    </div>
+  </section>
+
+  <!-- On Sale -->
+  <section id="sale" style="background: var(--blush); padding: 80px 5%;">
+    <div class="section-header">
+      <span class="section-tag">Limited Time</span>
+      <h2 class="section-title">On Sale</h2>
+      <p style="color: var(--gray-text); font-size: 14px; margin-top: 8px;">Up to 30% off selected beauty essentials</p>
+    </div>
+
+    <div class="carousel-wrapper">
+      <button class="carousel-arrow carousel-arrow-prev" id="sale-prev" aria-label="Previous">
+        <i class="ti ti-chevron-left"></i>
+      </button>
+      <div class="carousel-track-container">
+        <div class="carousel-track" id="sale-carousel" style="display:flex; gap:24px; transition:transform 0.5s ease;">
+          <p>Loading sale items...</p>
+        </div>
+      </div>
+      <button class="carousel-arrow carousel-arrow-next" id="sale-next" aria-label="Next">
+        <i class="ti ti-chevron-right"></i>
+      </button>
+    </div>
+
+    <div style="text-align:center; margin-top:32px;">
+      <a href="/index.html#products" style="
+        display: inline-block;
+        background: transparent;
+        color: #3d2014;
+        border: 1.5px solid #3d2014;
+        padding: 12px 36px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        transition: all 0.3s;
+      " onmouseover="this.style.background='#3d2014';this.style.color='white'"
+        onmouseout="this.style.background='transparent';this.style.color='#3d2014'">
+        Shop All Sale Items
+      </a>
+    </div>
+  </section>
+
+  <!-- Recommended -->
+  <section id="recommended" style="background: var(--white); padding: 80px 5%;">
+    <div class="carousel-section-header">
+      <div class="section-header">
+        <span class="section-tag">Picked For You</span>
+        <h2 class="section-title">You Might Love These</h2>
+      </div>
+      <button class="btn-outline carousel-refresh-btn" id="rec-refresh-btn">
+        <i class="ti ti-refresh"></i> Refresh
+      </button>
+    </div>
+
+    <div class="carousel-wrapper">
+      <button class="carousel-arrow carousel-arrow-prev" id="rec-prev" aria-label="Previous">
+        <i class="ti ti-chevron-left"></i>
+      </button>
+      <div class="carousel-track-container">
+        <div class="carousel-track" id="rec-carousel" style="display:flex; gap:24px; transition:transform 0.5s ease;">
+          <p>Loading recommendations...</p>
+        </div>
+      </div>
+      <button class="carousel-arrow carousel-arrow-next" id="rec-next" aria-label="Next">
+        <i class="ti ti-chevron-right"></i>
+      </button>
+    </div>
+  </section>
+
+  <!-- Beauty Tips Flip Cards -->
+  <section style="padding: 80px 5%; background: #fdf8f5;">
+    <div style="text-align:center; margin-bottom:48px;">
+      <span style="font-size:10px; letter-spacing:2.5px;
+        text-transform:uppercase; color:#c4917f;
+        display:block; margin-bottom:8px;">
+        GLOW GUIDE
+      </span>
+      <h2 style="font-family:'Playfair Display',serif;
+        font-size:32px; color:#3d2014; margin-bottom:8px;">
+        Beauty Tips From Our Experts
+      </h2>
+      <p style="font-size:14px; color:#8a7060;">
+        Tap any card to reveal the full tip
+      </p>
+    </div>
+
+    <div style="
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+    " id="tips-grid"></div>
+
+    <p style="text-align:center; margin-top:28px;
+      font-size:11px; color:#b0a09a; letter-spacing:0.5px;">
+      Tap any card to flip and reveal the full tip
+    </p>
+  </section>
+
+  <!-- Before/After Gallery -->
+  <section id="before-after-gallery" style="
+    padding: 80px 5%;
+    background: var(--blush);
+  ">
+    <div style="text-align:center; margin-bottom:48px;">
+      <span class="section-tag">REAL TRANSFORMATIONS</span>
+      <h2 class="section-title">See The Difference</h2>
+      <p style="color:var(--gray-text); font-size:14px;
+        max-width:500px; margin:0 auto;">
+        Real customers, real results. Drag any slider
+        to reveal the transformation.
+      </p>
+    </div>
+
+    <!-- Gallery grid: 3 sliders -->
+    <div style="
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 1100px;
+      margin: 0 auto 48px;
+    " id="ba-gallery-grid">
+    </div>
+
+    <!-- Featured large slider below -->
+    <div style="max-width:700px; margin:0 auto; text-align:center;">
+      <p style="font-size:11px; letter-spacing:2px;
+        text-transform:uppercase; color:var(--mauve);
+        margin-bottom:16px;">
+        FEATURED TRANSFORMATION
+      </p>
+      <div id="featured-ba-slider" style="
+        position: relative;
+        width: 100%;
+        height: 500px;
+        border-radius: 20px;
+        overflow: hidden;
+        cursor: col-resize;
+        user-select: none;
+        box-shadow: 0 8px 40px rgba(122,79,58,0.15);
+      ">
+        <img id="featured-after" src="/img4.1.jpeg" style="
+          position:absolute; inset:0;
+          width:100%; height:100%; object-fit:cover;
+        ">
+        <div id="featured-before-wrap" style="
+          position:absolute; inset:0; width:100%; overflow:hidden;
+        ">
+          <img src="/img4.jpeg" style="
+            position:absolute; top:0; left:0;
+            width:700px; max-width:none;
+            height:100%; object-fit:cover;
+            object-position: left center;
+          ">
+        </div>
+        <div id="featured-line" style="
+          position:absolute; top:0; left:100%;
+          transform:translateX(-50%);
+          width:3px; height:100%; background:white;
+          pointer-events:none;
+        "></div>
+        <div id="featured-handle" style="
+          position:absolute; top:50%; left:100%;
+          transform:translate(-50%,-50%);
+          width:52px; height:52px; background:white;
+          border-radius:50%; display:flex;
+          align-items:center; justify-content:center;
+          font-size:20px; color:#7a4f3a;
+          box-shadow:0 4px 16px rgba(0,0,0,0.2);
+          pointer-events:none; z-index:10;
+        ">⟺</div>
+        <div style="position:absolute; bottom:20px; left:20px;
+          background:rgba(61,32,20,0.75); color:white;
+          font-size:11px; letter-spacing:2px;
+          padding:5px 14px; border-radius:20px;
+          pointer-events:none;">BEFORE</div>
+        <div style="position:absolute; bottom:20px; right:20px;
+          background:rgba(61,32,20,0.75); color:white;
+          font-size:11px; letter-spacing:2px;
+          padding:5px 14px; border-radius:20px;
+          pointer-events:none;">AFTER</div>
+      </div>
+      <p style="margin-top:20px; color:var(--gray-text);
+        font-size:13px; line-height:1.7; max-width:480px;
+        margin-left:auto; margin-right:auto;">
+        Our Vitamin C Serum &amp; Rose Hip Oil work together
+        to clear blemishes and restore your natural glow
+        in just 4 weeks.
+      </p>
+      <a href="/skincare.html" style="
+        display:inline-block; margin-top:20px;
+        background:var(--mauve); color:white;
+        padding:12px 32px; border-radius:4px;
+        text-decoration:none; font-size:12px;
+        letter-spacing:2px; text-transform:uppercase;
+      ">Shop Skincare</a>
+    </div>
+  </section>
+
+  <!-- Features Bar -->
+  <section class="features-bar">
+    <div class="feature-item">
+      <i class="ti ti-truck"></i>
+      <h4>Free Shipping</h4>
+      <p>On all orders over $75</p>
+    </div>
+    <div class="feature-item">
+      <i class="ti ti-award"></i>
+      <h4>Premium Quality</h4>
+      <p>Authentic beauty brands</p>
+    </div>
+    <div class="feature-item">
+      <i class="ti ti-refresh"></i>
+      <h4>Easy Returns</h4>
+      <p>30-day hassle-free returns</p>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="categories-section">
+    <div class="section-header">
+      <span class="section-tag">Love Notes</span>
+      <h2 class="section-title">What Our Customers Say</h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"This rose hip oil completely transformed my skin in just 3 weeks. I've never received so many compliments!"</p>
+        <div class="testimonial-author">
+          <img class="author-avatar" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100" alt="Sarah M." />
+          <span>Sarah M.</span>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"The eyeshadow palette is stunning. The pigmentation is incredible and it lasts all day without creasing."</p>
+        <div class="testimonial-author">
+          <img class="author-avatar" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" alt="Lina K." />
+          <span>Lina K.</span>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"Fast shipping and beautiful packaging. The body butter smells divine and my skin feels amazing."</p>
+        <div class="testimonial-author">
+          <img class="author-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" alt="Maya R." />
+          <span>Maya R.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="newsletter-section" id="contact">
+    <h2>Join the Bloom Community</h2>
+    <p>Be the first to know about new collections &amp; exclusive offers</p>
+    <form class="newsletter-form" id="newsletter-form">
+      <input type="email" placeholder="Enter your email" required />
+      <button type="submit" class="btn-primary">Subscribe</button>
+    </form>
+  </section>
+
+  <!-- Footer (rendered by components.js) -->
+  <div id="footer-placeholder"></div>
+
+  <!-- Quick View Modal -->
+  <div id="quick-view-modal" style="
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(30,15,10,0.6);
+    z-index: 9998;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  ">
+    <div style="
+      background: white;
+      border-radius: 20px;
+      max-width: 820px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      position: relative;
+      animation: slideUp 0.3s ease;
+    ">
+      <!-- Close button -->
+      <button onclick="closeQuickView()" style="
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: #fdf8f5;
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 18px;
+        color: #3d2014;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      ">&times;</button>
+
+      <!-- Left: Product Image -->
+      <div style="position: relative; border-radius: 20px 0 0 20px; overflow: hidden;">
+        <img id="qv-image" src="" alt="" style="
+          width: 100%;
+          height: 100%;
+          min-height: 400px;
+          object-fit: cover;
+        ">
+        <span id="qv-category-badge" style="
+          position: absolute;
+          top: 16px;
+          left: 16px;
+          background: #c4917f;
+          color: white;
+          font-size: 11px;
+          letter-spacing: 1.5px;
+          text-transform: uppercase;
+          padding: 5px 12px;
+          border-radius: 20px;
+        "></span>
+      </div>
+
+      <!-- Right: Product Info -->
+      <div style="padding: 40px 36px; display: flex; flex-direction: column; justify-content: center;">
+        <p id="qv-category" style="
+          font-size: 11px;
+          letter-spacing: 1.5px;
+          text-transform: uppercase;
+          color: #c4917f;
+          margin-bottom: 8px;
+        "></p>
+        <h2 id="qv-name" style="
+          font-family: 'Playfair Display', serif;
+          font-size: 24px;
+          color: #3d2014;
+          margin-bottom: 12px;
+          line-height: 1.3;
+        "></h2>
+
+        <!-- Stars -->
+        <div style="color: #e8a87c; font-size: 14px; margin-bottom: 12px;">
+          ★★★★★ <span style="color: #8a7060; font-size: 12px;">(24 reviews)</span>
+        </div>
+
+        <p id="qv-price" style="
+          font-size: 22px;
+          color: #7a4f3a;
+          font-weight: 500;
+          margin-bottom: 16px;
+        "></p>
+
+        <p id="qv-description" style="
+          font-size: 13px;
+          color: #8a7060;
+          line-height: 1.7;
+          margin-bottom: 20px;
+        "></p>
+
+        <div id="qv-ingredients"></div>
+
+        <p id="qv-stock" style="
+          font-size: 12px;
+          margin-bottom: 20px;
+        "></p>
+
+        <!-- Quantity selector -->
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+          <span style="font-size: 13px; color: #3d2014;">Qty:</span>
+          <div style="display: flex; align-items: center; border: 1px solid #d4c5bc; border-radius: 24px; overflow: hidden;">
+            <button onclick="qvChangeQty(-1)" style="
+              background: none; border: none;
+              width: 36px; height: 36px;
+              cursor: pointer; font-size: 16px; color: #3d2014;
+            ">&minus;</button>
+            <input id="qv-qty" type="number" value="1" min="1" style="
+              width: 40px; text-align: center; border: none;
+              font-size: 14px; color: #3d2014; outline: none;
+            ">
+            <button onclick="qvChangeQty(1)" style="
+              background: none; border: none;
+              width: 36px; height: 36px;
+              cursor: pointer; font-size: 16px; color: #3d2014;
+            ">+</button>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <button id="qv-add-cart" onclick="qvAddToCart()" style="
+          background: #3d2014;
+          color: white;
+          border: none;
+          padding: 14px;
+          border-radius: 4px;
+          font-size: 12px;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          cursor: pointer;
+          margin-bottom: 10px;
+          transition: background 0.3s;
+        ">Add to Cart</button>
+
+        <button id="qv-add-wishlist" onclick="qvAddToWishlist()" style="
+          background: transparent;
+          color: #3d2014;
+          border: 1.5px solid #c4917f;
+          padding: 12px;
+          border-radius: 4px;
+          font-size: 12px;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          cursor: pointer;
+          margin-bottom: 16px;
+          transition: all 0.3s;
+        ">&#9825; Add to Wishlist</button>
+
+        <a id="qv-view-full" href="#" style="
+          text-align: center;
+          font-size: 12px;
+          color: #8a7060;
+          text-decoration: underline;
+          letter-spacing: 1px;
+        ">View Full Details &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/cart.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+    /* ============================================================
+       Skeleton loading
+       ============================================================ */
+    function showSkeletons(count = 8) {
+      const grid = document.getElementById('products-grid');
+      if (!grid) return;
+      grid.innerHTML = Array(count).fill(`
+        <div class="skeleton-card">
+          <div class="skeleton-img skeleton-pulse"></div>
+          <div style="padding:4px 0 0;">
+            <div class="skeleton-line short skeleton-pulse"></div>
+            <div class="skeleton-line medium skeleton-pulse" style="margin-top:8px;"></div>
+            <div class="skeleton-line full skeleton-pulse"></div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function showCarouselSkeletons(containerId, count = 4) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      const skeletonHTML = `
+        <div style="
+          background: white;
+          border-radius: 16px;
+          overflow: hidden;
+          border: 1px solid rgba(196,145,127,0.1);
+          min-width: calc((100% - 72px) / 4);
+          max-width: calc((100% - 72px) / 4);
+          flex-shrink: 0;
+        ">
+          <div style="
+            height: 220px;
+            background: linear-gradient(90deg, #f5ede8 25%, #fdf8f5 50%, #f5ede8 75%);
+            background-size: 800px 100%;
+            animation: shimmer 1.6s ease-in-out infinite;
+          "></div>
+          <div style="padding: 14px 16px 16px;">
+            <div style="
+              height: 10px; width: 35%; border-radius: 20px; margin-bottom: 10px;
+              background: linear-gradient(90deg, #f5ede8 25%, #fdf8f5 50%, #f5ede8 75%);
+              background-size: 800px 100%;
+              animation: shimmer 1.6s ease-in-out infinite;
+            "></div>
+            <div style="
+              height: 10px; width: 65%; border-radius: 20px; margin-bottom: 10px;
+              background: linear-gradient(90deg, #f5ede8 25%, #fdf8f5 50%, #f5ede8 75%);
+              background-size: 800px 100%;
+              animation: shimmer 1.6s ease-in-out infinite;
+            "></div>
+            <div style="
+              height: 36px; width: 100%; border-radius: 8px; margin-top: 12px;
+              background: linear-gradient(90deg, #f5ede8 25%, #fdf8f5 50%, #f5ede8 75%);
+              background-size: 800px 100%;
+              animation: shimmer 1.6s ease-in-out infinite;
+            "></div>
+          </div>
+        </div>
+      `;
+
+      container.innerHTML = Array(count).fill(skeletonHTML).join('');
+    }
+
+    /* ============================================================
+       Quick View product registry
+       ============================================================ */
+    let allProducts = [];
+
+    function registerProducts(products) {
+      products.forEach((product) => {
+        if (!allProducts.some((p) => p._id === product._id)) {
+          allProducts.push(product);
+        }
+      });
+    }
+
+
+    /* ============================================================
+       Stock badge
+       ============================================================ */
+    function getStockBadge(stock) {
+      if (stock === 0) {
+        return `<span style="
+          position: absolute; bottom: 12px; left: 12px;
+          background: #c0392b; color: white;
+          font-size: 10px; letter-spacing: 1px;
+          padding: 4px 10px; border-radius: 20px;
+          text-transform: uppercase;
+        ">Out of Stock</span>`;
+      } else if (stock <= 5) {
+        return `<span style="
+          position: absolute; bottom: 12px; left: 12px;
+          background: #e8a87c; color: white;
+          font-size: 10px; letter-spacing: 1px;
+          padding: 4px 10px; border-radius: 20px;
+          text-transform: uppercase;
+          animation: pulse 1.5s ease infinite;
+        ">Only ${stock} left!</span>`;
+      }
+      return '';
+    }
+
+    /* ============================================================
+       Product card renderer
+       ============================================================ */
+    function renderIngredientBadges(ingredients) {
+      if (!ingredients || ingredients.length === 0) return '';
+      return `
+        <div class="ingredient-badges" style="display: flex; flex-wrap: wrap; gap: 4px;">
+          ${ingredients.slice(0, 3).map(ing => `
+            <span style="
+              font-size: 9px;
+              letter-spacing: 0.8px;
+              text-transform: uppercase;
+              color: #7a4f3a;
+              background: #fdf8f5;
+              border: 1px solid #e8ddd5;
+              padding: 3px 8px;
+              border-radius: 20px;
+              white-space: nowrap;
+            ">${ing}</span>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function renderCarouselCard(product, showSaleBadge = false) {
+      const inWishlist = isInWishlist(product._id);
+      const originalPrice = showSaleBadge ?
+        (product.price * 1.3).toFixed(2) : null;
+      const prodJson = JSON.stringify(product).replace(/"/g, '&quot;');
+
+      return '<div style="'
+        + 'background:white;'
+        + 'border-radius:16px;'
+        + 'overflow:hidden;'
+        + 'border:1px solid rgba(196,145,127,0.15);'
+        + 'box-shadow:0 2px 12px rgba(122,79,58,0.06);'
+        + 'min-width:calc((100% - 72px) / 4);'
+        + 'max-width:calc((100% - 72px) / 4);'
+        + 'flex-shrink:0;'
+        + 'display:flex;'
+        + 'flex-direction:column;'
+        + 'transition:transform 0.3s ease, box-shadow 0.3s ease;'
+        + 'cursor:pointer;'
+        + '" '
+        + 'onmouseover="this.style.transform=\'translateY(-4px)\';this.style.boxShadow=\'0 8px 24px rgba(122,79,58,0.12)\'" '
+        + 'onmouseout="this.style.transform=\'translateY(0)\';this.style.boxShadow=\'0 2px 12px rgba(122,79,58,0.06)\'" '
+        + 'onclick="window.location.href=\'/product.html?id=' + product._id + '\'">'
+
+        // Image section
+        + '<div style="height:220px;overflow:hidden;position:relative;flex-shrink:0;" '
+        + 'onmouseover="this.querySelector(\'.quick-view-btn\').style.opacity=\'1\';this.querySelector(\'.quick-view-btn\').style.transform=\'translateX(-50%) translateY(0)\'" '
+        + 'onmouseout="this.querySelector(\'.quick-view-btn\').style.opacity=\'0\';this.querySelector(\'.quick-view-btn\').style.transform=\'translateX(-50%) translateY(10px)\'">'
+        + '<img src="' + product.image + '" alt="' + product.name + '" style="'
+        + 'width:100%;height:100%;object-fit:cover;transition:transform 0.5s ease;" '
+        + 'onerror="this.onerror=null;this.src=\'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=500&q=80&auto=format&fit=crop\'" '
+        + 'onmouseover="this.style.transform=\'scale(1.06)\'" '
+        + 'onmouseout="this.style.transform=\'scale(1)\'">'
+
+        + (showSaleBadge ? '<span style="position:absolute;top:12px;left:12px;'
+          + 'background:#c0392b;color:white;font-size:10px;'
+          + 'letter-spacing:1px;padding:4px 10px;'
+          + 'border-radius:20px;text-transform:uppercase;">SALE</span>' : '')
+
+        + '<button onclick="event.stopPropagation();toggleWishlist(' + prodJson + ');'
+        + 'this.innerHTML=isInWishlist(\'' + product._id + '\')?\'♥\':\'♡\';'
+        + 'this.style.color=isInWishlist(\'' + product._id + '\')?\'#c4917f\':\'\';'
+        + 'updateWishlistCountUI();" style="'
+        + 'position:absolute;top:12px;right:12px;'
+        + 'width:34px;height:34px;border-radius:50%;'
+        + 'background:white;border:1px solid #e8ddd5;'
+        + 'cursor:pointer;font-size:16px;'
+        + 'color:' + (inWishlist ? '#c4917f' : '#8a7060') + ';'
+        + 'display:flex;align-items:center;justify-content:center;'
+        + 'box-shadow:0 2px 8px rgba(0,0,0,0.08);'
+        + 'transition:all 0.2s;">'
+        + (inWishlist ? '♥' : '♡') + '</button>'
+
+        + '<button onclick="event.stopPropagation();openQuickView(\'' + product._id + '\')" style="'
+        + 'position:absolute;bottom:12px;left:50%;'
+        + 'transform:translateX(-50%) translateY(10px);'
+        + 'background:white;color:#3d2014;border:none;'
+        + 'padding:7px 18px;font-size:10px;letter-spacing:1.5px;'
+        + 'text-transform:uppercase;border-radius:20px;cursor:pointer;'
+        + 'opacity:0;transition:all 0.3s ease;white-space:nowrap;'
+        + 'box-shadow:0 4px 12px rgba(0,0,0,0.15);z-index:2;" '
+        + 'class="quick-view-btn">Quick View</button>'
+        + '</div>'
+
+        // Info section
+        + '<div style="padding:14px 16px 16px;display:flex;flex-direction:column;flex:1;">'
+
+        + '<div style="font-size:10px;letter-spacing:1.5px;'
+        + 'text-transform:uppercase;color:#c4917f;margin-bottom:4px;">'
+        + product.category + '</div>'
+
+        + '<div style="font-family:\'Playfair Display\',serif;'
+        + 'font-size:14px;color:#3d2014;font-weight:600;'
+        + 'margin-bottom:6px;line-height:1.3;">'
+        + product.name + '</div>'
+
+        + (product.ingredients && product.ingredients.length > 0
+          ? '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;">'
+            + product.ingredients.slice(0, 2).map(function(ing) {
+                return '<span style="font-size:9px;letter-spacing:0.8px;'
+                  + 'text-transform:uppercase;color:#7a4f3a;'
+                  + 'background:#fdf8f5;border:1px solid #e8ddd5;'
+                  + 'padding:2px 7px;border-radius:20px;">'
+                  + ing + '</span>';
+              }).join('')
+            + '</div>'
+          : '')
+
+        + '<div style="margin-top:auto;padding-top:8px;margin-bottom:12px;">'
+        + (showSaleBadge ? '<span style="font-size:12px;color:#b0a09a;'
+          + 'text-decoration:line-through;margin-right:6px;">'
+          + '$' + originalPrice + '</span>' : '')
+        + '<span style="font-size:15px;color:#7a4f3a;font-weight:500;">'
+        + '$' + product.price.toFixed(2) + '</span>'
+        + '</div>'
+
+        + '<button onclick="event.stopPropagation();addToCart(' + prodJson + ',1)" style="'
+        + 'width:100%;background:#c4917f;color:white;'
+        + 'border:none;padding:10px;border-radius:4px;'
+        + 'font-size:10px;letter-spacing:1.5px;'
+        + 'text-transform:uppercase;cursor:pointer;'
+        + 'transition:background 0.3s;" '
+        + 'onmouseover="this.style.background=\'#3d2014\'" '
+        + 'onmouseout="this.style.background=\'#c4917f\'">'
+        + 'Add to Cart</button>'
+
+        + '</div></div>';
+    }
+
+    /* ============================================================
+       Generic horizontal carousel
+       ============================================================ */
+    function createCarousel(trackId, prevId, nextId) {
+      const track = document.getElementById(trackId);
+      const prevBtn = document.getElementById(prevId);
+      const nextBtn = document.getElementById(nextId);
+      let index = 0;
+
+      function getMetrics() {
+        const card = track.children[0];
+        if (!card) return null;
+
+        const gap = 24;
+        const cardWidth = card.getBoundingClientRect().width + gap;
+        const wrapperWidth = track.parentElement.getBoundingClientRect().width;
+        const visible = Math.max(1, Math.floor(wrapperWidth / cardWidth));
+        const maxIndex = Math.max(0, track.children.length - visible);
+
+        return { cardWidth, maxIndex };
+      }
+
+      function update() {
+        const metrics = getMetrics();
+        if (!metrics) return;
+        index = Math.min(index, metrics.maxIndex);
+        track.style.transform = `translateX(-${index * metrics.cardWidth}px)`;
+      }
+
+      prevBtn.addEventListener('click', () => {
+        const metrics = getMetrics();
+        if (!metrics) return;
+        index = index <= 0 ? metrics.maxIndex : index - 1;
+        track.style.transform = `translateX(-${index * metrics.cardWidth}px)`;
+      });
+
+      nextBtn.addEventListener('click', () => {
+        const metrics = getMetrics();
+        if (!metrics) return;
+        index = index >= metrics.maxIndex ? 0 : index + 1;
+        track.style.transform = `translateX(-${index * metrics.cardWidth}px)`;
+      });
+
+      window.addEventListener('resize', update);
+
+      return {
+        reset() {
+          index = 0;
+          track.style.transform = 'translateX(0)';
+          update();
+        },
+      };
+    }
+
+    const newCarousel = createCarousel('new-carousel', 'new-prev', 'new-next');
+    const saleCarousel = createCarousel('sale-carousel', 'sale-prev', 'sale-next');
+    const recCarousel = createCarousel('rec-carousel', 'rec-prev', 'rec-next');
+
+    /* ============================================================
+       Fetch product sections
+       ============================================================ */
+    async function fetchNewArrivals() {
+      const track = document.getElementById('new-carousel');
+      showCarouselSkeletons('new-carousel');
+
+      try {
+        const res = await fetch('/api/products/new');
+        const products = await res.json();
+        console.log('New arrivals response:', products);
+
+        registerProducts(products);
+        track.innerHTML = products.map((p) => renderCarouselCard(p, false)).join('');
+        newCarousel.reset();
+      } catch (err) {
+        console.error('Error fetching new arrivals:', err);
+        track.innerHTML = '<p style="color:#8a7060; padding:20px;">Failed to load products. Please refresh.</p>';
+      }
+    }
+
+    async function fetchSaleProducts() {
+      const track = document.getElementById('sale-carousel');
+      showCarouselSkeletons('sale-carousel');
+
+      try {
+        const res = await fetch('/api/products/sale');
+        const products = await res.json();
+        console.log('Sale products response:', products);
+
+        registerProducts(products);
+        track.innerHTML = products.map((p) => renderCarouselCard(p, true)).join('');
+        saleCarousel.reset();
+      } catch (err) {
+        console.error('Error fetching sale products:', err);
+        track.innerHTML = '<p style="color:#8a7060; padding:20px;">Failed to load products. Please refresh.</p>';
+      }
+    }
+
+    async function fetchRecommended() {
+      const track = document.getElementById('rec-carousel');
+      showCarouselSkeletons('rec-carousel');
+
+      try {
+        const res = await fetch('/api/products/recommended');
+        const products = await res.json();
+        console.log('Recommended products response:', products);
+
+        registerProducts(products);
+        track.innerHTML = products.map((p) => renderCarouselCard(p, false)).join('');
+        recCarousel.reset();
+      } catch (err) {
+        console.error('Error fetching recommended products:', err);
+        track.innerHTML = '<p style="color:#8a7060; padding:20px;">Failed to load products. Please refresh.</p>';
+      }
+    }
+
+    document.getElementById('rec-refresh-btn').addEventListener('click', fetchRecommended);
+
+    /* ============================================================
+       Hero carousel
+       ============================================================ */
+    const heroSlides = document.querySelectorAll('.hero-slide');
+    const heroDots = document.querySelectorAll('.hero-dot');
+    const heroCarousel = document.getElementById('hero-carousel');
+    let heroIndex = 0;
+    let heroInterval;
+
+    function showHeroSlide(i) {
+      heroIndex = (i + heroSlides.length) % heroSlides.length;
+      heroSlides.forEach((slide, idx) => slide.classList.toggle('active', idx === heroIndex));
+      heroDots.forEach((dot, idx) => dot.classList.toggle('active', idx === heroIndex));
+    }
+
+    function startHeroAutoplay() {
+      heroInterval = setInterval(() => showHeroSlide(heroIndex + 1), 5000);
+    }
+
+    function stopHeroAutoplay() {
+      clearInterval(heroInterval);
+    }
+
+    document.getElementById('hero-prev').addEventListener('click', () => showHeroSlide(heroIndex - 1));
+    document.getElementById('hero-next').addEventListener('click', () => showHeroSlide(heroIndex + 1));
+
+    heroDots.forEach((dot) => {
+      dot.addEventListener('click', () => showHeroSlide(parseInt(dot.dataset.index, 10)));
+    });
+
+    heroCarousel.addEventListener('mouseenter', stopHeroAutoplay);
+    heroCarousel.addEventListener('mouseleave', startHeroAutoplay);
+
+    /* ============================================================
+       Before/After Gallery
+       ============================================================ */
+    const baGalleryData = [
+      {
+        id: 'ba1',
+        title: 'Acne Treatment',
+        product: 'Vitamin C Serum + Cleanser',
+        weeks: '6 weeks',
+        before: '/img1.jpeg',
+        after: '/img1.1.jpeg',
+        height: '280px'
+      },
+      {
+        id: 'ba2',
+        title: 'Skin Hydration',
+        product: 'Hydrating Moisturizer',
+        weeks: '4 weeks',
+        before: '/img3.jpeg',
+        after: '/img3.3.jpeg',
+        height: '280px'
+      },
+      {
+        id: 'ba3',
+        title: 'Anti-Aging',
+        product: 'Retinol Night Cream',
+        weeks: '8 weeks',
+        before: '/img2.jpeg',
+        after: '/img2.2.jpeg',
+        height: '280px'
+      }
+    ];
+
+    function createBASlider(data) {
+      return `
+        <div style="background:white; border-radius:16px;
+          overflow:hidden; box-shadow:var(--shadow-card);">
+          <div id="${data.id}" style="
+            position:relative; width:100%; height:${data.height};
+            cursor:col-resize; user-select:none; overflow:hidden;
+          ">
+            <img src="${data.after}" style="
+              position:absolute; inset:0;
+              width:100%; height:100%; object-fit:cover;
+            " onerror="this.src='/skin.jpg'">
+            <div id="${data.id}-wrap" style="
+              position:absolute; inset:0;
+              width:100%; overflow:hidden;
+            ">
+              <img src="${data.before}" style="
+                position:absolute; top:0; left:0;
+                width:100%; height:100%;
+                object-fit:cover;
+              " onerror="this.src='/skin.jpg'">
+            </div>
+            <div id="${data.id}-line" style="
+              position:absolute; top:0; left:100%;
+              transform:translateX(-50%);
+              width:2px; height:100%;
+              background:white; pointer-events:none;
+            "></div>
+            <div id="${data.id}-handle" style="
+              position:absolute; top:50%; left:100%;
+              transform:translate(-50%,-50%);
+              width:36px; height:36px; background:white;
+              border-radius:50%; display:flex;
+              align-items:center; justify-content:center;
+              font-size:14px; color:#7a4f3a;
+              box-shadow:0 2px 8px rgba(0,0,0,0.2);
+              pointer-events:none;
+            ">⟺</div>
+            <span style="position:absolute; top:10px; left:10px;
+              background:rgba(61,32,20,0.7); color:white;
+              font-size:9px; letter-spacing:1.5px;
+              padding:3px 10px; border-radius:20px;">BEFORE</span>
+            <span style="position:absolute; top:10px; right:10px;
+              background:rgba(61,32,20,0.7); color:white;
+              font-size:9px; letter-spacing:1.5px;
+              padding:3px 10px; border-radius:20px;">AFTER</span>
+          </div>
+          <div style="padding:16px;">
+            <div style="font-family:'Playfair Display',serif;
+              font-size:15px; color:var(--dark);
+              margin-bottom:4px;">${data.title}</div>
+            <div style="font-size:11px; color:var(--mauve);
+              letter-spacing:1px; text-transform:uppercase;
+              margin-bottom:4px;">${data.product}</div>
+            <div style="font-size:11px; color:var(--gray-text);">
+              Results in ${data.weeks}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function initBASlider(id, wrap, line, container) {
+      if (!container || !wrap) return;
+      let dragging = false;
+      const handle = document.getElementById(id + '-handle');
+
+      function setPos(clientX) {
+        const rect = container.getBoundingClientRect();
+        let pct = (clientX - rect.left) / rect.width;
+        pct = Math.min(Math.max(pct, 0.02), 0.98);
+        const p = (pct * 100).toFixed(1) + '%';
+        wrap.style.width = p;
+        if (line) line.style.left = p;
+        if (handle) handle.style.left = p;
+      }
+
+      container.addEventListener('mousedown', e => {
+        dragging = true; setPos(e.clientX); e.preventDefault();
+      });
+      window.addEventListener('mousemove', e => {
+        if (dragging) setPos(e.clientX);
+      });
+      window.addEventListener('mouseup', () => dragging = false);
+      container.addEventListener('touchstart', e => {
+        dragging = true; setPos(e.touches[0].clientX);
+      }, { passive: true });
+      window.addEventListener('touchmove', e => {
+        if (dragging) setPos(e.touches[0].clientX);
+      }, { passive: true });
+      window.addEventListener('touchend', () => dragging = false);
+    }
+
+    const baGrid = document.getElementById('ba-gallery-grid');
+    if (baGrid) {
+      baGrid.innerHTML = baGalleryData.map(createBASlider).join('');
+
+      baGalleryData.forEach(data => {
+        initBASlider(
+          data.id,
+          document.getElementById(data.id + '-wrap'),
+          document.getElementById(data.id + '-line'),
+          document.getElementById(data.id)
+        );
+      });
+    }
+
+    initBASlider(
+      'featured',
+      document.getElementById('featured-before-wrap'),
+      document.getElementById('featured-line'),
+      document.getElementById('featured-ba-slider')
+    );
+
+    /* ============================================================
+       Newsletter (placeholder submit)
+       ============================================================ */
+    document.getElementById('newsletter-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      e.target.reset();
+      alert('Thanks for subscribing!');
+    });
+
+    /* ============================================================
+       Quick View
+       ============================================================ */
+    let currentQVProduct = null;
+
+    async function openQuickView(productId) {
+      let product = (allProducts || []).find(p => p._id === productId);
+
+      if (!product) {
+        try {
+          const res = await fetch('/api/products/' + productId);
+          product = await res.json();
+        } catch(e) {
+          console.error('Could not load product', e);
+          return;
+        }
+      }
+
+      currentQVProduct = product;
+      document.getElementById('qv-image').src = product.image;
+      document.getElementById('qv-image').alt = product.name;
+      document.getElementById('qv-category').textContent = product.category;
+      document.getElementById('qv-category-badge').textContent = product.category;
+      document.getElementById('qv-name').textContent = product.name;
+      document.getElementById('qv-price').textContent = '$' + product.price.toFixed(2);
+      document.getElementById('qv-description').textContent = product.description;
+      document.getElementById('qv-qty').max = product.stock;
+      document.getElementById('qv-qty').value = 1;
+      document.getElementById('qv-view-full').href = '/product.html?id=' + product._id;
+
+      const stockEl = document.getElementById('qv-stock');
+      if (product.stock > 5) {
+        stockEl.innerHTML = '<span style="color:#6b8f71">● In Stock</span>';
+      } else if (product.stock > 0) {
+        stockEl.innerHTML = '<span style="color:#e8a87c">● Only ' + product.stock + ' left!</span>';
+      } else {
+        stockEl.innerHTML = '<span style="color:#c0392b">● Out of Stock</span>';
+      }
+
+      const modal = document.getElementById('quick-view-modal');
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeQuickView() {
+      document.getElementById('quick-view-modal').style.display = 'none';
+      document.body.style.overflow = '';
+      currentQVProduct = null;
+    }
+
+    function qvChangeQty(delta) {
+      const input = document.getElementById('qv-qty');
+      const max = currentQVProduct ? currentQVProduct.stock : 99;
+      let val = parseInt(input.value, 10) + delta;
+      val = Math.min(Math.max(val, 1), max);
+      input.value = val;
+    }
+
+    function qvAddToCart() {
+      if (!currentQVProduct) return;
+      if (!isLoggedIn()) { showAuthModal(window.location.pathname); return; }
+
+      const qty = parseInt(document.getElementById('qv-qty').value, 10) || 1;
+      addToCart(currentQVProduct, qty);
+
+      const btn = document.getElementById('qv-add-cart');
+      const originalText = btn.textContent;
+      btn.textContent = 'Added! ✓';
+      btn.style.background = 'var(--success)';
+      setTimeout(() => {
+        btn.textContent = originalText;
+        btn.style.background = '#3d2014';
+      }, 1500);
+    }
+
+    function qvAddToWishlist() {
+      if (!currentQVProduct) return;
+      if (!isLoggedIn()) { showAuthModal(window.location.pathname); return; }
+
+      const nowWishlisted = toggleWishlist(currentQVProduct);
+      document.getElementById('qv-add-wishlist').textContent = nowWishlisted ? '♥ Added to Wishlist' : '♡ Add to Wishlist';
+
+      document.querySelectorAll(`.product-wishlist[data-id="${currentQVProduct._id}"]`).forEach((cardBtn) => {
+        cardBtn.innerHTML = nowWishlisted ? '♥' : '♡';
+        cardBtn.style.color = nowWishlisted ? '#c4917f' : '';
+      });
+
+      if (nowWishlisted) heartBurst(document.getElementById('qv-add-wishlist'));
+    }
+
+    document.getElementById('quick-view-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'quick-view-modal') closeQuickView();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeQuickView();
+    });
+
+    /* ============================================================
+       Beauty Tips Flip Cards
+       ============================================================ */
+    const beautyTips = [
+      {
+        icon: 'ti-sun',
+        category: 'SKINCARE',
+        tip: 'Always Apply SPF Last',
+        description: 'Sunscreen is the final step in your morning routine — applied after moisturizer and before makeup. Never skip it.',
+        color: '#fff8f0',
+        link: '/skincare.html',
+        linkText: 'Shop Sunscreen'
+      },
+      {
+        icon: 'ti-droplet',
+        category: 'HYDRATION',
+        tip: 'Layer Thinnest to Thickest',
+        description: 'Apply products from thinnest to thickest — toner, serum, moisturizer — for maximum absorption into the skin.',
+        color: '#f0f7ff',
+        link: '/skincare.html',
+        linkText: 'Shop Serums'
+      },
+      {
+        icon: 'ti-moon',
+        category: 'NIGHT ROUTINE',
+        tip: 'Retinol Is Your Nighttime BFF',
+        description: 'Use retinol only at night — it breaks down in sunlight. Start 2-3 times a week and slowly build up.',
+        color: '#f5f0ff',
+        link: '/skincare.html',
+        linkText: 'Shop Night Creams'
+      },
+      {
+        icon: 'ti-massage',
+        category: 'SCALP CARE',
+        tip: 'Massage Your Scalp Daily',
+        description: 'A 2-minute scalp massage boosts circulation, promotes hair growth, and feels incredibly relaxing every morning.',
+        color: '#f0fff5',
+        link: '/haircare.html',
+        linkText: 'Shop Scalp Care'
+      },
+      {
+        icon: 'ti-brush',
+        category: 'MAKEUP',
+        tip: 'Blend Foundation Down Your Neck',
+        description: 'Always blend your foundation down your neck and chest to avoid a visible face line for a seamless finish.',
+        color: '#fff0f5',
+        link: '/makeup.html',
+        linkText: 'Shop Foundation'
+      },
+      {
+        icon: 'ti-sparkles',
+        category: 'GLOW TIP',
+        tip: 'Highlight Where Light Hits',
+        description: 'Apply highlighter where natural light hits — tops of cheekbones, brow bone, and cupid\'s bow for a glow.',
+        color: '#fffbf0',
+        link: '/makeup.html',
+        linkText: 'Shop Bronzer & Blush'
+      },
+      {
+        icon: 'ti-bath',
+        category: 'BODY CARE',
+        tip: 'Moisturize on Damp Skin',
+        description: 'Apply body lotion or oil within 2 minutes of showering while skin is slightly damp to lock in moisture.',
+        color: '#f5fff8',
+        link: '/bodycare.html',
+        linkText: 'Shop Body Care'
+      },
+      {
+        icon: 'ti-leaf',
+        category: 'INGREDIENTS',
+        tip: 'Never Mix Retinol & Vitamin C',
+        description: 'Use Vitamin C in the morning and retinol at night — combining them causes irritation and reduces effectiveness.',
+        color: '#f0faf5',
+        link: '/skincare.html',
+        linkText: 'Shop Skincare'
+      }
+    ];
+
+    function renderFlipCards() {
+      const grid = document.getElementById('tips-grid');
+      if (!grid) return;
+
+      grid.innerHTML = beautyTips.map((tip, i) => `
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+
+            <div class="flip-front" style="background:${tip.color};">
+              <div class="flip-icon-circle">
+                <i class="ti ${tip.icon}" aria-hidden="true"></i>
+              </div>
+              <div style="font-size:9px; letter-spacing:2px;
+                text-transform:uppercase; color:#c4917f;
+                margin-bottom:8px;">
+                ${tip.category}
+              </div>
+              <div style="font-family:'Playfair Display',serif;
+                font-size:15px; color:#3d2014;
+                text-align:center; line-height:1.4;
+                margin-bottom:16px;">
+                ${tip.tip}
+              </div>
+              <div style="font-size:10px; color:#b0a09a;
+                letter-spacing:1px; display:flex;
+                align-items:center; gap:4px;">
+                <i class="ti ti-rotate-clockwise"
+                  style="font-size:12px; color:#c4917f;"
+                  aria-hidden="true"></i>
+                Tap to reveal
+              </div>
+            </div>
+
+            <div class="flip-back">
+              <div class="flip-icon-circle"
+                style="background:rgba(255,255,255,0.1);
+                box-shadow:none;">
+                <i class="ti ${tip.icon}"
+                  style="font-size:28px; color:#c4917f;"
+                  aria-hidden="true"></i>
+              </div>
+              <div style="font-size:9px; letter-spacing:2px;
+                text-transform:uppercase; color:#c4917f;
+                margin-bottom:8px;">
+                ${tip.category}
+              </div>
+              <div style="font-family:'Playfair Display',serif;
+                font-size:14px; color:white;
+                text-align:center; line-height:1.4;
+                margin-bottom:10px;">
+                ${tip.tip}
+              </div>
+              <div style="font-size:11px; color:rgba(255,255,255,0.75);
+                text-align:center; line-height:1.7;
+                margin-bottom:16px;">
+                ${tip.description}
+              </div>
+              <a href="${tip.link}"
+                onclick="event.stopPropagation()"
+                style="font-size:10px; letter-spacing:1.5px;
+                text-transform:uppercase; color:#c4917f;
+                text-decoration:none;
+                border-bottom:1px solid #c4917f;
+                padding-bottom:2px;
+                display:inline-flex;
+                align-items:center; gap:4px;">
+                ${tip.linkText}
+                <i class="ti ti-arrow-right"
+                  style="font-size:12px;"
+                  aria-hidden="true"></i>
+              </a>
+            </div>
+
+          </div>
+        </div>
+      `).join('');
+    }
+
+    renderFlipCards();
+
+    /* ============================================================
+       Init
+       ============================================================ */
+    initNavbar();
+    initFooter();
+    updateCartCountUI();
+    fetchNewArrivals();
+    fetchSaleProducts();
+    fetchRecommended();
+    startHeroAutoplay();
+  </script>
+</body>
+</html>

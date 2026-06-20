@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bloom Beauty - Your Bag</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <!-- Navbar (rendered by components.js) -->
+  <div id="navbar-placeholder"></div>
+
+  <h1 class="page-title">Your Shopping Bag</h1>
+
+  <div class="cart-layout">
+    <div class="cart-items-col" id="cart-items-col"></div>
+
+    <div class="cart-summary-col">
+      <div style="
+        background: white;
+        border-radius: 16px;
+        padding: 28px;
+        border: 1px solid #f0e8e3;
+        box-shadow: 0 4px 20px rgba(122,79,58,0.06);
+        position: sticky;
+        top: 100px;
+      ">
+        <h3 style="font-family:'Playfair Display',serif;
+          font-size:20px; color:#3d2014; margin-bottom:24px;
+          padding-bottom:16px; border-bottom:1px solid #f0e8e3;">
+          Order Summary
+        </h3>
+
+        <div style="display:flex; justify-content:space-between;
+          margin-bottom:12px;">
+          <span style="font-size:13px; color:#8a7060;">Subtotal</span>
+          <span style="font-size:13px; color:#3d2014;" id="cart-subtotal"></span>
+        </div>
+
+        <div style="display:flex; justify-content:space-between;
+          margin-bottom:20px; padding-bottom:20px;
+          border-bottom:1px solid #f0e8e3;">
+          <span style="font-size:13px; color:#8a7060;">Shipping</span>
+          <span style="font-size:13px; color:#3d2014;" id="cart-shipping"></span>
+        </div>
+
+        <div style="display:flex; justify-content:space-between;
+          margin-bottom:24px;">
+          <span style="font-size:16px; font-weight:500; color:#3d2014;">
+            Total
+          </span>
+          <span style="font-size:18px; font-weight:500; color:#c4917f;"
+            id="cart-total"></span>
+        </div>
+
+        <a href="/checkout.html" id="checkout-btn" onclick="return handleCheckoutClick(event)" style="
+          display:block; background:#3d2014; color:white;
+          padding:14px; border-radius:4px; text-align:center;
+          text-decoration:none; font-size:12px; letter-spacing:2px;
+          text-transform:uppercase; transition:background 0.3s;
+          margin-bottom:12px;
+        " onmouseover="this.style.background='#7a4f3a'"
+          onmouseout="this.style.background='#3d2014'">
+          Proceed to Checkout
+        </a>
+
+        <a href="/index.html" style="
+          display:block; text-align:center; font-size:12px;
+          color:#8a7060; text-decoration:none; letter-spacing:1px;
+          padding:8px;
+        ">Continue Shopping</a>
+
+        <div style="display:flex; align-items:center;
+          justify-content:center; gap:6px; margin-top:16px;
+          padding-top:16px; border-top:1px solid #f0e8e3;">
+          <i class="ti ti-lock" style="font-size:14px; color:#8a7060;"></i>
+          <span style="font-size:11px; color:#8a7060; letter-spacing:0.5px;">
+            Secure 256-bit SSL encryption
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer (rendered by components.js) -->
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/cart.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+    /* ============================================================
+       Checkout
+       ============================================================ */
+    function handleCheckoutClick(e) {
+      if (!localStorage.getItem('token')) {
+        e.preventDefault();
+        showAuthModal(window.location.pathname);
+        return false;
+      }
+      return true;
+    }
+
+    /* ============================================================
+       Cart
+       ============================================================ */
+    const cartItemsCol = document.getElementById('cart-items-col');
+    const FREE_SHIPPING_THRESHOLD = 75;
+    const SHIPPING_COST = 9.99;
+
+    function renderCart() {
+      const cart = getCart();
+
+      updateCartCountUI();
+      renderSummary();
+
+      if (!cart.length) {
+        cartItemsCol.innerHTML = `
+          <div class="cart-empty">
+            <i class="ti ti-shopping-bag"></i>
+            <p>Your bag is empty</p>
+            <a href="index.html#products" class="btn-primary">Continue Shopping</a>
+          </div>
+        `;
+        return;
+      }
+
+      cartItemsCol.innerHTML = cart.map(item => `
+        <div style="
+          display: flex;
+          align-items: center;
+          gap: 20px;
+          padding: 20px 0;
+          border-bottom: 1px solid #f0e8e3;
+        ">
+          <img src="${item.image}" alt="${item.name}" style="
+            width: 90px; height: 90px;
+            object-fit: cover; border-radius: 12px;
+            flex-shrink: 0; border: 1px solid #f0e8e3;
+          " onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=200&q=80&auto=format&fit=crop'">
+
+          <div style="flex: 1;">
+            <div style="font-size:10px; letter-spacing:1.5px;
+              text-transform:uppercase; color:#c4917f; margin-bottom:4px;">
+              ${item.category || ''}
+            </div>
+            <div style="font-family:'Playfair Display',serif;
+              font-size:16px; color:#3d2014; margin-bottom:4px;">
+              ${item.name}
+            </div>
+            ${item.selectedShade ? `
+              <div style="font-size:11px; color:#8a7060;
+                display:flex; align-items:center; gap:6px;">
+                <span style="width:10px; height:10px; border-radius:50%;
+                  background:${item.selectedShade};
+                  display:inline-block; border:1px solid #d4c5bc;">
+                </span>
+                ${item.selectedShade}
+              </div>` : ''}
+            <div style="font-size:13px; color:#8a7060; margin-top:4px;">
+              $${item.price.toFixed(2)} each
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center;
+            border:1px solid #e8ddd5; border-radius:24px;
+            overflow:hidden; flex-shrink:0;">
+            <button onclick="updateQuantity('${item._id}', ${item.quantity - 1}); renderCart();" style="
+              width:32px; height:32px; background:none; border:none;
+              cursor:pointer; font-size:16px; color:#3d2014;
+              display:flex; align-items:center; justify-content:center;
+              transition:background 0.2s;
+            " onmouseover="this.style.background='#f5ede8'"
+              onmouseout="this.style.background='none'">−</button>
+            <span style="width:32px; text-align:center;
+              font-size:14px; color:#3d2014;">
+              ${item.quantity}
+            </span>
+            <button onclick="updateQuantity('${item._id}', ${item.quantity + 1}); renderCart();" style="
+              width:32px; height:32px; background:none; border:none;
+              cursor:pointer; font-size:16px; color:#3d2014;
+              display:flex; align-items:center; justify-content:center;
+              transition:background 0.2s;
+            " onmouseover="this.style.background='#f5ede8'"
+              onmouseout="this.style.background='none'">+</button>
+          </div>
+
+          <div style="font-size:16px; color:#3d2014;
+            font-weight:500; min-width:70px; text-align:right;
+            flex-shrink:0;">
+            $${(item.price * item.quantity).toFixed(2)}
+          </div>
+
+          <button onclick="removeFromCart('${item._id}'); renderCart();" style="
+            background:none; border:none; cursor:pointer;
+            color:#b0a09a; font-size:18px; padding:4px;
+            transition:color 0.2s; flex-shrink:0;
+          " onmouseover="this.style.color='#c0392b'"
+            onmouseout="this.style.color='#b0a09a'">
+            <i class="ti ti-x" style="font-size:16px;"></i>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function renderSummary() {
+      const subtotal = getCartTotal();
+      const shipping = subtotal === 0 || subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+      const total = subtotal + shipping;
+
+      document.getElementById('cart-subtotal').textContent = '$' + subtotal.toFixed(2);
+      document.getElementById('cart-shipping').textContent = shipping === 0 ? 'Free' : '$' + shipping.toFixed(2);
+      document.getElementById('cart-total').textContent = '$' + total.toFixed(2);
+    }
+
+    /* ============================================================
+       Init
+       ============================================================ */
+    initNavbar();
+    initFooter();
+    renderCart();
+  </script>
+</body>
+</html>
